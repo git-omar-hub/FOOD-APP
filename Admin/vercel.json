@@ -3,16 +3,14 @@
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "Frontend/package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/Frontend/$1" }
+    { "src": "/(.*)", "dest": "/$1" }
   ],
   "env": {
     "NODE_ENV": "production"
