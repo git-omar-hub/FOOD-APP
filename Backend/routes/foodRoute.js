@@ -23,16 +23,16 @@ const foodRouter = express.Router();
 // });
 // const upload = multer({ storage: storge });
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "foods", // هيعمل فولدر في Cloudinary
-  },
-});
+// const storage = new CloudinaryStorage({
+//   cloudinary: cloudinary,
+//   params: {
+//     folder: "foods", // هيعمل فولدر في Cloudinary
+//   },
+// });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
-
+const upload = multer({ storage: multer.memoryStorage() });
 
 foodRouter.post("/add", upload.single("image"), addFood);
 foodRouter.get("/list", listFood);
