@@ -22,14 +22,37 @@ import cloudinary from "../config/cloudinary.js";
 // };
 
 
-const addFood = async (req, res, next) => {
+
+const addFood = async (req, res) => {
   try {
+    if (!req.file) {
+      return res.json({ success: false, message: "No image uploaded" });
+    }
+
+    // نحول upload_stream لـ Promise
+    const uploadToCloudinary = () =>
+      new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "foods",
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+
+        stream.end(req.file.buffer);
+      });
+
+    const result = await uploadToCloudinary();
+
     const food = new foodModel({
       name: req.body.name,
       description: req.body.description,
       price: req.body.price,
-      image_public_id: req.file.filename,
-      image: req.file.path, // بنخزن اللينك
+      image: result.secure_url,
+      image_public_id: result.public_id,
       category: req.body.category,
     });
 
@@ -38,9 +61,30 @@ const addFood = async (req, res, next) => {
     res.json({ success: true, message: "Food added" });
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: "Error" });
+    res.json({ success: false, message: "Error adding food" });
   }
 };
+
+
+// const addFood = async (req, res, next) => {
+//   try {
+//     const food = new foodModel({
+//       name: req.body.name,
+//       description: req.body.description,
+//       price: req.body.price,
+//       image_public_id: req.file.filename,
+//       image: req.file.path, // بنخزن اللينك
+//       category: req.body.category,
+//     });
+
+//     await food.save();
+
+//     res.json({ success: true, message: "Food added" });
+//   } catch (error) {
+//     console.log(error);
+//     res.json({ success: false, message: "Error" });
+//   }
+// };
 
 //all food list
 const listFood = async (req, res) => {
