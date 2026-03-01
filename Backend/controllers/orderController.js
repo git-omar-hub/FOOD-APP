@@ -8,7 +8,7 @@ import Stripe from "stripe";
 const placeOrder = async (req, res) => {
   const stripe = new Stripe(process.env.STRIB_SECRET_KEY);
 
-  const fronyEndUrl = "http://localhost:3000";
+  const fronyEndUrl = "https://food-app-jtkt.vercel.app";
 
   try {
     const newOrder = new orderModel({
@@ -105,3 +105,4 @@ const updateStatus = async (req, res) => {
 };
 
 export { placeOrder, verifyOrder, userOrder, listOrders, updateStatus };
+
