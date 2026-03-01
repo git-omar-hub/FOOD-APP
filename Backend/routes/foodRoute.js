@@ -8,7 +8,7 @@ import multer from "multer";
 import { count } from "console";
 import path from "path";
 import cloudinary from "../config/cloudinary.js";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
+
 
 const foodRouter = express.Router();
 
@@ -39,3 +39,4 @@ foodRouter.get("/list", listFood);
 foodRouter.post("/remove", removeFood);
 
 export default foodRouter;
+
