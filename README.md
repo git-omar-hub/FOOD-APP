@@ -68,7 +68,7 @@ Backend API - Cloud-based image storage - Secure authentication system
     │   └── userRoute.js
     └── uploads
 
-        Frontend
+    Frontend
     ├── .gitignore
     ├── package-lock.json
     ├── package.json
