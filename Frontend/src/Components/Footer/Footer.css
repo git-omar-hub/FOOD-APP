@@ -74,4 +74,8 @@ hr {
   .footer-copyright {
     text-align: center;
   }
+    .scroll-to-top{
+   display: none;
+  }
 }
+
