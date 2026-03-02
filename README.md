@@ -4,10 +4,20 @@
 > Dashboard
 
 ![MERN](https://img.shields.io/badge/Stack-MERN-green)
-![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)
-![Stripe](https://img.shields.io/badge/Payments-Stripe-blue)
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)](https://your-dish.vercel.app)
+[![Node.js](https://img.shields.io/badge/Node.js-v18-green?logo=node.js)](https://nodejs.org/)
+[![Express.js](https://img.shields.io/badge/Express.js-4.x-black?logo=express)](https://expressjs.com/)
+[![React](https://img.shields.io/badge/React-v18-blue?logo=react)](https://reactjs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green?logo=mongodb)](https://www.mongodb.com/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow?logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 ![JWT](https://img.shields.io/badge/Auth-JWT-orange)
-![Vercel](https://img.shields.io/badge/Deployed-Vercel-black)
+[![Stripe](https://img.shields.io/badge/Stripe-Payments-blueviolet?logo=stripe)](https://stripe.com/)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+[![Git](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white)](https://git-scm.com/)
+[![VS Code](https://img.shields.io/badge/VS%20Code-007ACC?logo=visual-studio-code&logoColor=white)](https://code.visualstudio.com/)
+[![Postman](https://img.shields.io/badge/Postman-FF6C37?logo=postman&logoColor=white)](https://www.postman.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ------------------------------------------------------------------------
 
@@ -31,6 +41,143 @@ Backend API - Cloud-based image storage - Secure authentication system
     ├── Frontend (React)
     └── Admin Panel (React + Vite)
 
+    Backend
+    ├── .env
+    ├── index.js
+    ├── package-lock.json
+    ├── package.json
+    ├── vercel.json
+    ├── config
+    │   ├── cloudinary.js
+    │   └── DB.js
+    ├── controllers
+    │   ├── cartController.js
+    │   ├── foodController.js
+    │   ├── orderController.js
+    │   └── userController.js
+    ├── middlewares
+    │   └── auth.js
+    ├── models
+    │   ├── foodModel.js
+    │   ├── orderModel.js
+    │   └── userModel.js
+    ├── routes
+    │   ├── cartRouter.js
+    │   ├── foodRoute.js
+    │   ├── orderRouter.js
+    │   └── userRoute.js
+    └── uploads
+
+        Frontend
+    ├── .gitignore
+    ├── package-lock.json
+    ├── package.json
+    ├── README.md
+    ├── public
+    │   ├── favicon.ico
+    │   ├── header_img.png
+    │   ├── index.html
+    │   ├── logo192.png
+    │   ├── logo512.png
+    │   ├── manifest.json
+    │   └── robots.txt
+    └── src
+        ├── App.js
+        ├── App.test.js
+        ├── index.css
+        ├── index.js
+        ├── logo.svg
+        ├── reportWebVitals.js
+        ├── setupTests.js
+        ├── assets
+        │   ├── add_icon_green.png
+        │   ├── add_icon_white.png
+        │   └── ... (other assets)
+        └── Components
+            ├── AppDownLoad
+            │   ├── AppDownLoad.css
+            │   └── AppDownLoad.jsx
+            ├── context
+            │   └── StoreContext.jsx
+            ├── ExploreMenu
+            │   ├── exploreMenu.css
+            │   └── ExploreMenu.jsx
+            ├── foodDisplay
+            │   ├── FoodDisplay.css
+            │   └── FoodDisplay.jsx
+            ├── FoodItem
+            │   ├── FoodItem.css
+            │   └── FoodItem.jsx
+            ├── Footer
+            │   ├── Footer.css
+            │   └── Footer.jsx
+            ├── Header
+            │   ├── Header.css
+            │   └── Header.jsx
+            ├── loginPopup
+            │   ├── LoginPopup.css
+            │   └── LoginPopup.jsx
+            ├── Navbar
+            │   ├── Navbar.css
+            │   └── Navbar.jsx
+            └── pages
+                ├── Cart
+                │   ├── Cart.css
+                │   └── Cart.jsx
+                ├── home
+                │   ├── Home.css
+                │   └── home.jsx
+                ├── myorders
+                │   ├── MyOrders.css
+                │   └── MyoRders.jsx
+                ├── PlaceOrder
+                │   ├── PlaceOrder.css
+                │   └── PlaceOrder.jsx
+                └── verify
+                    ├── verify.css
+                    └── verify.jsx
+    Admin
+    ├── .gitignore
+    ├── index.html
+    ├── package-lock.json
+    ├── package.json
+    ├── README.md
+    ├── vercel.json
+    ├── vite.config.js
+    ├── dist
+    │   ├── index.html
+    │   ├── vite.svg
+    │   └── assets
+    │       ├── app_store-C8O_cY6s.png
+    │       ├── header_img-DfvEA7zQ.png
+    │       └── index-blVvueo7.css
+    ├── public
+    │   └── vite.svg
+    └── src
+        ├── App.jsx
+        ├── index.css
+        ├── main.jsx
+        ├── assets
+        │   ├── add_icon.png
+        │   ├── assets.js
+        │   └── logo.png
+        ├── components
+        │   ├── Navbar
+        │   │   ├── Navbar.css
+        │   │   └── Navebar.jsx
+        │   └── SideBar
+        │       ├── SideBar.css
+        │       └── SideBar.jsx
+        └── pages
+            ├── Add
+            │   ├── Add.css
+            │   └── Add.jsx
+            ├── List
+            │   ├── List.css
+            │   └── List.jsx
+            └── Orders
+                ├── Order.css
+                └── Order.jsx
 ------------------------------------------------------------------------
 
 ## 🛠️ Tech Stack
@@ -89,6 +236,14 @@ Backend API - Cloud-based image storage - Secure authentication system
 -   Order status validation after successful transaction
 
 ------------------------------------------------------------------------
+## 🧪Development Tools
+
+-   VS Code (IDE)
+-   Postman (API testing)
+-   Git for version control
+-   Stripe Checkout Session
+
+------------------------------------------------------------------------
 
 ## 📦 Features
 
@@ -116,7 +271,6 @@ Backend API - Cloud-based image storage - Secure authentication system
 
 Create a `.env` file inside the Backend folder and add:
 
-    PORT=5000
     MONGO_URI=your_mongodb_connection_string
     JWT_SECRET=your_secret_key
     STRIPE_SECRET_KEY=your_stripe_secret
@@ -131,7 +285,7 @@ Create a `.env` file inside the Backend folder and add:
 ### 1️⃣ Clone Repository
 
 ``` bash
-git clone https://github.com/your-username/your-dish.git
+git clone https://github.com/git-omar-hub/FOOD-APP.git
 cd your-dish
 ```
 
@@ -163,13 +317,13 @@ npm run dev
 
 ## 🌍 Live Demo
 
-🔗 Add your Vercel deployment link here
+🔗 https://food-app-jtkt.vercel.app
 
 ------------------------------------------------------------------------
 
 ## 👨‍💻 Author
 
-Developed by **Bahgat**\
+Developed by **Omar Elbasty**\
 Computer Science & Engineering Student
 
 ------------------------------------------------------------------------
