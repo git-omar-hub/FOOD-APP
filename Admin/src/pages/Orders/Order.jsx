@@ -1,8 +1,7 @@
 import "./Order.css";
-import React, { useEffect, useState } from "react";
-import { StoreContext } from "./../../../../Frontend/src/Components/context/StoreContext";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { assets } from "./../../../../Frontend/src/assets/assets";
 const Order = ({ url }) => {
   const [orders, setOrders] = useState([]);
@@ -11,7 +10,7 @@ const Order = ({ url }) => {
     if (res.data.success) {
       setOrders(res.data.data);
     } else {
-      toast.error("Error featching orders");
+      toast.error("Error fetching orders");
     }
   };
 
@@ -22,9 +21,9 @@ const Order = ({ url }) => {
     });
     if (res.data.success) {
       await featchALlOrders();
-      toast.success("Status updated successfuly");
+      toast.success("Status updated successfully");
     } else {
-      toast.error("Error featching orders");
+      toast.error("Error fetching orders");
     }
   };
 

@@ -3,17 +3,26 @@ import "./MyOrders.css";
 import { StoreContext } from "../../context/StoreContext";
 import axios from "axios";
 import { assets } from "../../../assets/assets";
+import { toast } from "sonner";
 const MyoRders = () => {
   const [data, setData] = useState([]);
   const { url, token } = useContext(StoreContext);
 
   const featchOrdes = async () => {
-    const res = await axios.post(
-      url + "/api/order/userorders",
-      {},
-      { headers: { token } },
-    );
-    setData(res.data.data);
+    try {
+      const res = await axios.post(
+        url + "/api/order/userorders",
+        {},
+        { headers: { token } },
+      );
+      if (res.data.success) {
+        setData(res.data.data);
+      } else {
+        toast.error("Failed to fetch orders");
+      }
+    } catch {
+      toast.error("Something went wrong");
+    }
   };
   useEffect(
     (params) => {

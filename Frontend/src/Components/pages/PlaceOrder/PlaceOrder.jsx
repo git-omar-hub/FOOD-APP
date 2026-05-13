@@ -1,37 +1,54 @@
-import React, { useContext, useEffect, useState } from "react";
-import "./PlaceOrder.css";
-import { StoreContext } from "../../context/StoreContext";
-import axios from "axios";
+import { useContext, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { StoreContext } from "../../context/StoreContext";
+import FormField from "../../FormField/FormField";
+import "./PlaceOrder.css";
+
+const deliverySchema = z.object({
+  fristName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().min(1, "Email is required").email("Invalid email address"),
+  street: z.string().min(1, "Street is required"),
+  city: z.string().min(1, "City is required"),
+  state: z.string().min(1, "State is required"),
+  zipcode: z.string().min(1, "ZIP code is required"),
+  country: z.string().min(1, "Country is required"),
+  phone: z.string().min(10, "Phone must be at least 10 digits"),
+});
 
 const PlaceOrder = () => {
   const { getTotalCartAmount, token, food_list, cartItems, url } =
     useContext(StoreContext);
-  const [data, setData] = useState({
-    fristName: "",
-    lastName: "",
-    email: "",
-    street: "",
-    city: "",
-    state: "",
-    zipcode: "",
-    country: "",
-    phone: "",
+  const navegat = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(deliverySchema),
   });
 
-  const onChangeHandler = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setData((data) => ({ ...data, [name]: value }));
-  };
+  useEffect(() => {
+    if (!token) {
+      toast.error("Please sign in to checkout");
+      navegat("/cart");
+    } else if (getTotalCartAmount() === 0) {
+      toast.error("Your cart is empty");
+      navegat("/cart");
+    }
+  }, [token, getTotalCartAmount, navegat]);
 
-  const placeOrder = async (event) => {
-    event.preventDefault();
+  const onSubmit = async (data) => {
     let orderItems = [];
-    food_list.map((item) => {
+    food_list.forEach((item) => {
       if (cartItems[item._id] > 0) {
-        let itemInfo = item;
-        itemInfo["quantity"] = cartItems[item._id];
+        let itemInfo = { ...item, quantity: cartItems[item._id] };
         orderItems.push(itemInfo);
       }
     });
@@ -40,108 +57,89 @@ const PlaceOrder = () => {
       items: orderItems,
       amount: getTotalCartAmount() + 2,
     };
-    let response = await axios.post(url + "/api/order/place", orderData, {
-      headers: { token },
-    });
-    if (response.data.success) {
-      const { session_url } = response.data;
-      window.location.replace(session_url);
-    } else {
-      alert("Error");
+    try {
+      let response = await axios.post(url + "/api/order/place", orderData, {
+        headers: { token },
+      });
+      if (response.data.success) {
+        const { session_url } = response.data;
+        window.location.replace(session_url);
+      } else {
+        toast.error(response.data.message || "Failed to place order");
+      }
+    } catch (err) {
+      if (err.code === "ERR_NETWORK") {
+        toast.error("Backend is offline — please try again later");
+      } else {
+        toast.error(err.response?.data?.message || "Failed to place order");
+      }
     }
   };
 
-  const navegat = useNavigate();
-
-  useEffect(() => {
-    if (!token) {
-      navegat("/cart");
-    } else if (getTotalCartAmount() === 0) {
-      navegat("/cart");
-    }
-  }, [token]);
-
   return (
-    <form onSubmit={placeOrder} className="place-order">
+    <form onSubmit={handleSubmit(onSubmit)} className="place-order">
       <div className="place-order-left">
         <p className="title">Delivery Information</p>
         <div className="multi-fields">
-          <input
-            required
-            onChange={onChangeHandler}
-            type="text"
+          <FormField
             name="fristName"
-            id=""
-            placeholder="Frist name"
+            placeholder="First name"
+            register={register}
+            error={errors.fristName}
           />
-          <input
-            required
-            onChange={onChangeHandler}
-            type="text"
+          <FormField
             name="lastName"
-            id=""
             placeholder="Last name"
+            register={register}
+            error={errors.lastName}
           />
         </div>
-        <input
-          required
-          onChange={onChangeHandler}
-          type="email"
+        <FormField
           name="email"
-          id=""
+          type="email"
           placeholder="Email address"
+          register={register}
+          error={errors.email}
         />
-        <input
-          required
-          onChange={onChangeHandler}
-          type="text"
+        <FormField
           name="street"
-          id=""
           placeholder="Street"
+          register={register}
+          error={errors.street}
         />
         <div className="multi-fields">
-          <input
-            required
-            onChange={onChangeHandler}
-            type="text"
+          <FormField
             name="city"
-            id=""
             placeholder="City"
+            register={register}
+            error={errors.city}
           />
-          <input
-            required
-            onChange={onChangeHandler}
-            type="text"
+          <FormField
             name="state"
-            id=""
             placeholder="State"
+            register={register}
+            error={errors.state}
           />
         </div>
         <div className="multi-fields">
-          <input
-            required
-            onChange={onChangeHandler}
-            type="text"
+          <FormField
             name="zipcode"
-            id=""
             placeholder="Zip code"
+            register={register}
+            error={errors.zipcode}
           />
-          <input
-            required
-            onChange={onChangeHandler}
-            type="text"
+          <FormField
             name="country"
-            id=""
             placeholder="Country"
+            register={register}
+            error={errors.country}
           />
         </div>
-        <input
-          required
-          onChange={onChangeHandler}
-          type="text"
+        <FormField
           name="phone"
-          id=""
           placeholder="Phone"
+          register={register}
+          error={errors.phone}
         />
       </div>
       <div className="place-order-right">
@@ -149,7 +147,7 @@ const PlaceOrder = () => {
           <h2>Cart Totals</h2>
           <div>
             <div className="cart-total-details">
-              <p>Suptotal</p>
+              <p>Subtotal</p>
               <p>${getTotalCartAmount()}</p>
             </div>
             <hr />
@@ -166,7 +164,9 @@ const PlaceOrder = () => {
             </div>
             <hr />
           </div>
-          <button type="submit">PROCEED TO PAYMENT</button>
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "PROCESSING..." : "PROCEED TO PAYMENT"}
+          </button>
         </div>
       </div>
     </form>

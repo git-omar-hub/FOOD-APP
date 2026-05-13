@@ -5,13 +5,29 @@ import { Route, Routes } from "react-router-dom";
 import List from "./pages/List/List";
 import Add from "./pages/Add/Add";
 import Order from "./pages/Orders/Order";
-import { ToastContainer } from "react-toastify";
+import { Toaster } from "sonner";
 
 const App = () => {
   const url = "https://food-app-eta-lemon.vercel.app";
   return (
     <div>
-      <ToastContainer />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            borderRadius: "100px",
+            padding: "10px 20px",
+            background: "rgba(0,0,0,0.85)",
+            backdropFilter: "blur(12px)",
+            color: "#fff",
+            fontSize: "14px",
+            border: "1px solid rgba(255,255,255,0.15)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+          },
+          success: { icon: "✓" },
+          error: { icon: "✗" },
+        }}
+      />
       <Navebar />
       <hr />
       <div className="app-content">

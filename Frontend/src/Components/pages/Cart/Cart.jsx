@@ -1,13 +1,33 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import "./Cart.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "sonner";
 
 const Cart = () => {
-  const { food_list, cartItems, removeFromCart, getTotalCartAmount} =
+  const { food_list, cartItems, removeFromCart, getTotalCartAmount, url, token } =
     useContext(StoreContext);
-
+  const [promoCode, setPromoCode] = useState("");
   const navegate = useNavigate();
+
+  const handlePromoSubmit = async () => {
+    if (!promoCode.trim()) {
+      toast.error("Please enter a promo code");
+      return;
+    }
+    try {
+      await axios.post(`${url}/api/cart/coupon`, { code: promoCode });
+      toast.success("Coupon applied!");
+    } catch (err) {
+      if (err.code === "ERR_NETWORK") {
+        toast.error("Coupon service unavailable");
+      } else {
+        toast.error(err.response?.data?.message || "Invalid coupon code");
+      }
+    }
+    setPromoCode("");
+  };
   return (
     <div className="cart">
       <div className="cart-items">
@@ -72,6 +92,14 @@ const Cart = () => {
           </div>
           <button
             onClick={() => {
+              if (!token) {
+                toast.error("Please sign in to checkout");
+                return;
+              }
+              if (getTotalCartAmount() === 0) {
+                toast.error("Your cart is empty");
+                return;
+              }
               navegate("/order");
             }}
           >
@@ -82,8 +110,13 @@ const Cart = () => {
           <div>
             <p>If you have a promo code, Enter it here</p>
             <div className="cart-promocode-input">
-              <input type="text" placeholder="promo code" />
-              <button>Submit</button>
+              <input
+                type="text"
+                placeholder="promo code"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value)}
+              />
+              <button onClick={handlePromoSubmit}>Submit</button>
             </div>
           </div>
         </div>
