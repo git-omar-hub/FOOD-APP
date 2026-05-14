@@ -1,4 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+  --bg: #fff;
+  --text: #333;
+  --card-bg: #fff;
+  --card-shadow: 0px 0px 10px #00000015;
+  --border: #c9c9c9;
+  --muted: #808080;
+}
+
+[data-theme="dark"] {
+  --bg: #1a1a1a;
+  --text: #eee;
+  --card-bg: #2a2a2a;
+  --card-shadow: 0px 0px 10px #00000050;
+  --border: #444;
+  --muted: #999;
+}
+
 *{
   padding: 0;
   margin: 0;
@@ -8,6 +27,9 @@
 }
 body{
   min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
 }
 a{
   text-decoration: none;
@@ -18,24 +40,21 @@ a{
   margin: auto;
 }
 @keyframes fadeIn {
-  0%{
-    opacity: 0;
-  }
-  100%{
-    opacity: 1;
-  }
-  
+  0%{ opacity: 0; }
+  100%{ opacity: 1; }
+}
+@keyframes fadIn {
+  0%{ opacity: 0; }
+  100%{ opacity: 1; }
 }
 
 [data-sonner-toast] {
   --enter: translate3d(0, -24px, 0) scale(0.85) !important;
 }
-
 [data-sonner-toast][data-visible="true"] {
   transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
               opacity 0.25s ease-out !important;
 }
-
 [data-sonner-toast][data-removing="true"] {
   transition: transform 0.2s ease-out,
               opacity 0.2s ease-out !important;

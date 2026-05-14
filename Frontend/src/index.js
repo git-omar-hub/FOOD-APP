@@ -5,10 +5,12 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter} from "react-router-dom"
 import StoreContextProvider from './Components/context/StoreContext';
+import { ThemeProvider } from './Components/context/ThemeContext';
 import { Toaster } from "sonner";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
+  <ThemeProvider>
   <StoreContextProvider>
     <App />
     <Toaster
@@ -29,6 +31,7 @@ root.render(
         }}
       />
   </StoreContextProvider>
+  </ThemeProvider>
   </BrowserRouter>
 );
 

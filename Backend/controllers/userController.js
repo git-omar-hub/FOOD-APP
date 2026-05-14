@@ -73,4 +73,38 @@ const registerUser = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser };
+const getProfile = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.body.userId).select("-password");
+    res.json({ success: true, data: user });
+  } catch (error) {
+    res.json({ success: false, message: "Error fetching profile" });
+  }
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const user = await userModel.findByIdAndUpdate(req.body.userId, { name }, { new: true }).select("-password");
+    res.json({ success: true, message: "Profile updated", data: user });
+  } catch (error) {
+    res.json({ success: false, message: "Error updating profile" });
+  }
+};
+
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await userModel.findById(req.body.userId);
+    const match = await bcrypt.compare(currentPassword, user.password);
+    if (!match) return res.json({ success: false, message: "Current password is incorrect" });
+    if (newPassword.length < 8) return res.json({ success: false, message: "Password must be at least 8 characters" });
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    res.json({ success: true, message: "Password changed" });
+  } catch (error) {
+    res.json({ success: false, message: "Error changing password" });
+  }
+};
+
+export { loginUser, registerUser, getProfile, updateProfile, changePassword };

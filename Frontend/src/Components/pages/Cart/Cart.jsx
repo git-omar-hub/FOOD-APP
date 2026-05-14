@@ -17,8 +17,12 @@ const Cart = () => {
       return;
     }
     try {
-      await axios.post(`${url}/api/cart/coupon`, { code: promoCode });
-      toast.success("Coupon applied!");
+      const res = await axios.post(`${url}/api/coupon/apply`, { code: promoCode, amount: getTotalCartAmount() + 2 });
+      if (res.data.success) {
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data.message);
+      }
     } catch (err) {
       if (err.code === "ERR_NETWORK") {
         toast.error("Coupon service unavailable");
