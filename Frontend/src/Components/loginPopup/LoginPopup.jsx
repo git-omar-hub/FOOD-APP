@@ -7,13 +7,14 @@ import axios from "axios";
 import { assets } from "../../assets/assets";
 import { StoreContext } from "../context/StoreContext";
 import FormField from "../FormField/FormField";
+import PasswordStrength from "../PasswordStrength/PasswordStrength";
 import "./LoginPopup.css";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email address"),
   password: z
     .string()
-    .min(6, "Password must be at least 6 characters"),
+    .min(8, "Password must be at least 8 characters"),
 });
 
 const signupSchema = loginSchema.extend({
@@ -31,10 +32,13 @@ const LoginPopup = ({ setShowLogin }) => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
   });
+
+  const passwordValue = watch("password");
 
   const onSubmit = async (data) => {
     const endpoint = isSignUp ? "/api/user/register" : "/api/user/login";
@@ -88,6 +92,7 @@ const LoginPopup = ({ setShowLogin }) => {
             register={register}
             error={errors.password}
           />
+          {isSignUp && <PasswordStrength value={passwordValue || ""} />}
           <button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Please wait..." : isSignUp ? "Create account" : "Login"}
           </button>

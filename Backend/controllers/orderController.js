@@ -44,50 +44,50 @@ const placeOrder = async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       line_items: line_items,
       mode: "payment",
-      success_url: `${fronyEndUrl}/verify?success=true&orderId=${newOrder._id}`,
-      cancel_url: `${fronyEndUrl}/verify?success=false&orderId=${newOrder._id}`,
+      successs_url: `${fronyEndUrl}/verify?successs=true&orderId=${newOrder._id}`,
+      cancel_url: `${fronyEndUrl}/verify?successs=false&orderId=${newOrder._id}`,
     });
 
-    res.json({ success: true, session_url: session.url });
+    res.json({ successs: true, session_url: session.url });
   } catch (error) {
     console.log(error);
-    res.json({ succes: false, message: "Error", session_url: session.url });
+    res.json({ success: false, message: "Error", session_url: session.url });
   }
 };
 
 const verifyOrder = async (req, res) => {
-  const { success, orderId } = req.body;
+  const { successs, orderId } = req.body;
   try {
-    if (success == "true") {
+    if (successs == "true") {
       await orderModel.findByIdAndUpdate(orderId, { payment: true });
-      res.json({ succes: true, message: "Paid" });
+      res.json({ success: true, message: "Paid" });
     } else {
       await orderModel.findByIdAndDelete(orderId);
-      res.json({ succes: false, message: "Not Paid" });
+      res.json({ success: false, message: "Not Paid" });
     }
   } catch (error) {
     console.log(error);
-    res.json({ succes: false, message: "Error" });
+    res.json({ success: false, message: "Error" });
   }
 };
 
 const userOrder = async (req, res) => {
   try {
     const orders = await orderModel.find({ userId: req.body.userId });
-    res.json({ succes: true, data: orders });
+    res.json({ success: true, data: orders });
   } catch (error) {
     console.log(error);
-    res.json({ succes: false, message: "Error" });
+    res.json({ success: false, message: "Error" });
   }
 };
 
 const listOrders = async (req, res) => {
   try {
     const orders = await orderModel.find();
-    res.json({ success: true, data: orders });
+    res.json({ successs: true, data: orders });
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: "Error" });
+    res.json({ successs: false, message: "Error" });
   }
 };
 
@@ -96,24 +96,24 @@ const updateStatus = async (req, res) => {
     await orderModel.findByIdAndUpdate(req.body.orderId, {
       status: req.body.status,
     });
-    res.json({ success: true, message: "Status updated" });
+    res.json({ successs: true, message: "Status updated" });
   } catch (error) {
     console.log(error);
 
-    res.json({ success: false, message: "Error" });
+    res.json({ successs: false, message: "Error" });
   }
 };
 
 const cancelOrder = async (req, res) => {
   try {
     const order = await orderModel.findOne({ _id: req.body.orderId, userId: req.body.userId });
-    if (!order) return res.json({ success: false, message: "Order not found" });
-    if (order.status === "Delivered") return res.json({ success: false, message: "Cannot cancel delivered order" });
+    if (!order) return res.json({ successs: false, message: "Order not found" });
+    if (order.status === "Delivered") return res.json({ successs: false, message: "Cannot cancel delivered order" });
     order.status = "Cancelled";
     await order.save();
-    res.json({ success: true, message: "Order cancelled" });
+    res.json({ successs: true, message: "Order cancelled" });
   } catch (error) {
-    res.json({ success: false, message: "Error cancelling order" });
+    res.json({ successs: false, message: "Error cancelling order" });
   }
 };
 

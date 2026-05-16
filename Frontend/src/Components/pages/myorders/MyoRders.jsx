@@ -15,9 +15,8 @@ const MyoRders = () => {
   const featchOrdes = async () => {
     setLoading(true);
     try {
-      const res = await axios.post(
+      const res = await axios.get(
         url + "/api/order/userorders",
-        {},
         { headers: { token } },
       );
       if (res.data.success) {

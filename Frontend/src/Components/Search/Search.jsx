@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { assets } from "../../assets/assets";
 import "./Search.css";
 
 const Search = ({ onSearch }) => {
@@ -16,7 +17,11 @@ const Search = ({ onSearch }) => {
   };
 
   if (!open) {
-    return <button className="search-toggle" onClick={() => setOpen(true)}>🔍</button>;
+    return (
+      <button className="search-toggle" onClick={() => setOpen(true)}>
+        <img src={assets.search_icon} alt="" />
+      </button>
+    );
   }
 
   return (
@@ -28,8 +33,7 @@ const Search = ({ onSearch }) => {
         onChange={(e) => setValue(e.target.value)}
         autoFocus
       />
-      {value && <span className="search-clear" onClick={handleClear}>✕</span>}
-      <button type="submit">Search</button>
+      <button type="submit">Go</button>
     </form>
   );
 };

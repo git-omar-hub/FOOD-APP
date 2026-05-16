@@ -1,21 +1,24 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { food_list as localFoodList } from "../../assets/assets";
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
-  const [food_list, setFood_list] = useState([]);
-  const url = "https://food-app-eta-lemon.vercel.app";
+  const [food_list, setFood_list] = useState(localFoodList);
+  const url = "http://localhost:4000";
   const [token, setToken] = useState("");
 
   const getFoodList = () => {
     axios
       .get(`${url}/api/food/list`)
       .then((res) => {
-        setFood_list(res.data.data);
+        if (res.data.success && Array.isArray(res.data.data)) {
+          setFood_list(res.data.data);
+        }
       })
-      .catch((err) => toast.error("Failed to load food list"));
+      .catch(() => {});
   };
 
   const addToCart = async (itemId) => {

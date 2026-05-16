@@ -11,7 +11,7 @@ import Coupons from "./pages/Coupons/Coupons";
 import { Toaster } from "sonner";
 
 const App = () => {
-  const url = "https://food-app-eta-lemon.vercel.app";
+  const url = "http://localhost:4000";
   return (
     <div>
       <Toaster

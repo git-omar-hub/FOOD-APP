@@ -4,6 +4,7 @@ import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
+import EmptyState from "../../EmptyState/EmptyState";
 
 const Cart = () => {
   const { food_list, cartItems, removeFromCart, getTotalCartAmount, url, token } =
@@ -32,6 +33,21 @@ const Cart = () => {
     }
     setPromoCode("");
   };
+  const cartHasItems = Object.values(cartItems).some((qty) => qty > 0);
+
+  if (!cartHasItems) {
+    return (
+      <div className="cart">
+        <EmptyState
+          icon="🛒"
+          title="Your cart is empty"
+          message="Looks like you haven't added anything yet"
+          action={{ label: "Browse Menu", onClick: () => navegate("/") }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="cart">
       <div className="cart-items">

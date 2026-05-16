@@ -1,4 +1,8 @@
-import dotenv from 'dotenv';
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+const __dirname = dirname(fileURLToPath(import.meta.url));
+process.loadEnvFile(join(__dirname, ".env"));
+
 import  express  from "express";
 import cors from 'cors';
 import {connectDB} from './config/DB.js'
@@ -12,8 +16,6 @@ import addressRouter from "./routes/addressRouter.js";
 import favoriteRouter from "./routes/favoriteRouter.js";
 import reviewRouter from "./routes/reviewRouter.js";
 import dashboardRouter from "./routes/dashboardRouter.js";
-
-dotenv.config();
 
 const app=express();
 
