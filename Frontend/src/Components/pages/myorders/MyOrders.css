@@ -9,7 +9,7 @@
 }
 .my-orders-order {
   display: grid;
-  grid-template-columns: 0.5fr 2fr 1fr 1fr 2fr 1fr;
+  grid-template-columns: 0.5fr 2fr 2fr;
   align-items: center;
   gap: 30px;
   font-size: 14px;
@@ -20,21 +20,41 @@
 .my-orders-order img {
   width: 50px;
 }
-.my-orders-order p span {
+.my-orders-order__info p span {
   color: tomato;
 }
-
-.my-orders-order p b {
+.my-orders-order__info p b {
   font-weight: 500;
   color: #454545;
 }
-.my-orders-order button {
+.my-orders-order__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 200px;
+  width: 100%;
+}
+.my-orders-order__actions button {
   border: none;
-  padding: 12px 0px;
+  padding: 12px 0;
   border-radius: 4px;
   background-color: #ffe1e1;
   cursor: pointer;
   color: #454545;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 500;
+}
+.my-orders-order__actions .cancel-btn {
+  background-color: #ffe1e1;
+  color: tomato;
+  font-weight: 600;
+}
+.my-orders-order__actions .timeline {
+  width: 100%;
+}
+.my-orders-order__actions .timeline-label {
+  font-size: 10px;
 }
 
 @media (max-width: 900px) {
@@ -43,7 +63,7 @@
     row-gap: 5px;
     font-size: 12px;
   }
-  .my-orders-order bottom {
+  .my-orders-order__actions button {
     font-size: 10px;
   }
 }

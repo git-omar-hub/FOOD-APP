@@ -33,6 +33,56 @@
 .place-order .cart-total button {
   margin-top: 30px;
 }
+.cart-total-discount {
+  color: #2e7d32;
+}
+.save-address-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.save-address-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: tomato;
+  margin: 0;
+}
+.saved-addresses {
+  margin-bottom: 20px;
+}
+.saved-addresses-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+}
+.saved-addresses-empty {
+  font-size: 13px;
+  color: #999;
+  font-style: italic;
+}
+.saved-address-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+  transition: 0.2s;
+}
+.saved-address-card:hover {
+  border-color: tomato;
+  background: #fff4f2;
+}
 @media (max-width: 750px) {
   .place-order{
     flex-direction: column;

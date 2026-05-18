@@ -86,11 +86,23 @@ const addFood = async (req, res) => {
 //   }
 // };
 
-//all food list
 const listFood = async (req, res) => {
   try {
-    const foods = await foodModel.find();
-    res.json({ success: true, message: "Food List", data: foods });
+    const { search, category, page = 1, limit = 20 } = req.query;
+    let query = {};
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+    if (category) query.category = category;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const [foods, total] = await Promise.all([
+      foodModel.find(query).skip(skip).limit(parseInt(limit)),
+      foodModel.countDocuments(query),
+    ]);
+    res.json({ success: true, data: foods, total, page: parseInt(page), totalPages: Math.ceil(total / parseInt(limit)) });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: "Error" });

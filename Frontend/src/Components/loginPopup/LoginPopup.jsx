@@ -1,113 +1,118 @@
-import React, { useContext, useState } from "react";
-import "./LoginPopup.css";
+import { useContext, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
+import axios from "axios";
 import { assets } from "../../assets/assets";
 import { StoreContext } from "../context/StoreContext";
-import axios from "axios";
-const LoginPopup = ({ setShowLogin }) => {
-  const { url, setToken } = useContext(StoreContext);
-  const [currState, setCurrState] = useState("Login");
-  const [data, setData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const onChangeHandler = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-    setData((data) => ({ ...data, [name]: value }));
-  };
+import FormField from "../FormField/FormField";
+import PasswordStrength from "../PasswordStrength/PasswordStrength";
+import "./LoginPopup.css";
 
-  const onLogin = async (event) => {
-    event.preventDefault();
-    let newUrl;
-    if (currState === "Login") {
-      newUrl = `${url}/api/user/login`;
-    } else {
-      newUrl = `${url}/api/user/register`;
-    }
-    axios.post(newUrl, data).then((res) => {
+const loginSchema = z.object({
+  email: z.string().min(1, "Email is required").email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters"),
+});
+
+const signupSchema = loginSchema.extend({
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters"),
+});
+
+const LoginPopup = ({ setShowLogin }) => {
+  const { url, setToken, cartItems } = useContext(StoreContext);
+  const [currState, setCurrState] = useState("Login");
+  const isSignUp = currState === "Sign Up";
+  const schema = isSignUp ? signupSchema : loginSchema;
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(schema),
+  });
+
+  const passwordValue = watch("password");
+
+  const onSubmit = async (data) => {
+    const endpoint = isSignUp ? "/api/user/register" : "/api/user/login";
+    try {
+      const res = await axios.post(`${url}${endpoint}`, data);
       if (res.data.success) {
         setToken(res.data.token);
         localStorage.setItem("token", res.data.token);
         setShowLogin(false);
+        const hasLocalItems = Object.values(cartItems).some((q) => q > 0);
+        if (hasLocalItems) {
+          await axios.post(`${url}/api/cart/merge`, { items: cartItems }, { headers: { token: res.data.token } });
+        }
+        toast.success(isSignUp ? "Account created successfully" : "Logged in successfully");
       } else {
-        alert(res.data.message);
+        toast.error(res.data.message);
       }
-    });
+    } catch {
+      toast.error("Something went wrong");
+    }
   };
 
   return (
     <div className="login-popup">
-      <form onSubmit={onLogin} className="login-popup-container">
+      <form onSubmit={handleSubmit(onSubmit)} className="login-popup-container">
         <div className="login-popup-title">
           <h2>{currState}</h2>
           <img
-            onClick={() => {
-              setShowLogin(false);
-            }}
+            onClick={() => setShowLogin(false)}
             src={assets.cross_icon}
             alt=""
           />
         </div>
         <div className="login-popup-inputs">
-          {currState === "Sign Up" ? (
-            <input
-              onChange={onChangeHandler}
-              type="text"
+          {isSignUp && (
+            <FormField
               name="name"
-              value={data.name}
+              type="text"
               placeholder="Your name"
-              required
+              register={register}
+              error={errors.name}
             />
-          ) : (
-            <></>
           )}
-          <input
-            onChange={onChangeHandler}
-            type="email"
+          <FormField
             name="email"
+            type="email"
             placeholder="Your email"
-            value={data.email}
-            id=""
-            required
+            register={register}
+            error={errors.email}
           />
-          <input
-            onChange={onChangeHandler}
-            value={data.password}
-            type="password"
+          <FormField
             name="password"
+            type="password"
             placeholder="Password"
-            id=""
-            required
+            register={register}
+            error={errors.password}
           />
-          <button type="submit">
-            {currState === "Sign Up" ? "Create account" : "Login"}
+          {isSignUp && <PasswordStrength value={passwordValue || ""} />}
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Please wait..." : isSignUp ? "Create account" : "Login"}
           </button>
           <div className="login-popup-condition">
-            <input type="checkbox" name="" id="" required />
-            <p>By cotinuing, i agree to the terms of use & privacy policy</p>
+            <input type="checkbox" required />
+            <p>By continuing, I agree to the terms of use & privacy policy</p>
           </div>
-          {currState === "Login" ? (
+          {isSignUp ? (
             <p>
-              Create a new account{" "}
-              <span
-                onClick={() => {
-                  setCurrState("Sign Up");
-                }}
-              >
-                CLick here
-              </span>
+              Already have an account{" "}
+              <span onClick={() => setCurrState("Login")}>Login here</span>
             </p>
           ) : (
             <p>
-              Already have an account{" "}
-              <span
-                onClick={() => {
-                  setCurrState("Login");
-                }}
-              >
-                Login here
-              </span>
+              Create a new account{" "}
+              <span onClick={() => setCurrState("Sign Up")}>Click here</span>
             </p>
           )}
         </div>

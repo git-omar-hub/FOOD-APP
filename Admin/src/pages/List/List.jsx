@@ -1,7 +1,7 @@
 import "./List.css";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 const List = ({ url }) => {
   const [list, setList] = useState([]);
 
@@ -11,7 +11,7 @@ const List = ({ url }) => {
     if (res.data.success) {
       setList(res.data.data);
     } else {
-      toast.error("Error gettig food list");
+      toast.error("Error getting food list");
     }
   };
 
@@ -21,7 +21,7 @@ const List = ({ url }) => {
         id: foodId,
       })
       .then((res) => {
-        toast.success(`${res.data.data.name} removed successfuly`);
+        toast.success(`${res.data.data.name} removed successfully`);
         fetchList();
       })
       .catch((error) => {

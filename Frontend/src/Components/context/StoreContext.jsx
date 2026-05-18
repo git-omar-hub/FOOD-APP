@@ -1,21 +1,25 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
-// import { food_list } from "../../assets/assets";
+import { toast } from "sonner";
+import { food_list as localFoodList } from "../../assets/assets";
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
-  const [food_list, setFood_list] = useState([]);
-  const url = "https://food-app-eta-lemon.vercel.app";
+  const [food_list, setFood_list] = useState(localFoodList);
+  const [favoritedIds, setFavoritedIds] = useState(new Set());
+  const url = "http://localhost:4000";
   const [token, setToken] = useState("");
 
   const getFoodList = () => {
     axios
       .get(`${url}/api/food/list`)
       .then((res) => {
-        setFood_list(res.data.data);
+        if (res.data.success && Array.isArray(res.data.data)) {
+          setFood_list(res.data.data);
+        }
       })
-      .catch((err) => alert(err));
+      .catch(() => {});
   };
 
   const addToCart = async (itemId) => {
@@ -24,19 +28,21 @@ const StoreContextProvider = (props) => {
     } else {
       setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
     }
+    toast.success("Added to cart");
     if (token) {
       await axios
         .post(`${url}/api/cart/add`, { itemId }, { headers: { token } })
-        .catch((err) => console.log(err));
+        .catch(() => toast.error("Failed to sync cart"));
     }
   };
 
   const removeFromCart = async (itemId) => {
     setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
+    toast("Removed from cart");
     if (token) {
       await axios
         .post(`${url}/api/cart/remove`, { itemId }, { headers: { token } })
-        .catch((err) => console.log(err));
+        .catch(() => toast.error("Failed to sync cart"));
     }
   };
 
@@ -46,7 +52,21 @@ const StoreContextProvider = (props) => {
       .then((res) => {
         setCartItems(res.data.data);
       })
-      .catch((err) => console.log(err));
+      .catch(() => toast.error("Failed to load cart"));
+  };
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponCode, setCouponCode] = useState("");
+
+  const loadFavorites = async (token) => {
+    try {
+      const res = await axios.post(`${url}/api/favorite/list`, {}, { headers: { token } });
+      if (res.data.success) {
+        const ids = new Set((res.data.data || []).map((f) => f._id));
+        setFavoritedIds(ids);
+      }
+    } catch {}
   };
 
   const getTotalCartAmount = () => {
@@ -69,6 +89,14 @@ const StoreContextProvider = (props) => {
     url,
     token,
     setToken,
+    searchQuery,
+    setSearchQuery,
+    favoritedIds,
+    loadFavorites,
+    couponDiscount,
+    setCouponDiscount,
+    couponCode,
+    setCouponCode,
   };
 
   useEffect(() => {
@@ -77,9 +105,15 @@ const StoreContextProvider = (props) => {
       if (localStorage.getItem("token")) {
         setToken(localStorage.getItem("token"));
         await loadCartData(localStorage.getItem("token"));
+        await loadFavorites(localStorage.getItem("token"));
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (token) loadFavorites(token);
+    else setFavoritedIds(new Set());
+  }, [token]);
   return (
     <StoreContext.Provider value={contextValue}>
       {props.children}
