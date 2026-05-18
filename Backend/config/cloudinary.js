@@ -1,8 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-const __dirname = dirname(fileURLToPath(import.meta.url));
-process.loadEnvFile(join(__dirname, "..", ".env"));
+
+import dotenv from "dotenv";
+dotenv.config();
 
 cloudinary.config({
   cloud_name:process.env.CLOUD_NAME,

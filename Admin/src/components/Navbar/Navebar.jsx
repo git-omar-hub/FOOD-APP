@@ -3,7 +3,7 @@ import "./Navbar.css";
 import React from "react";
 import { assets } from "../../assets/assets";
 
-const Navbar = () => {
+const Navebar = () => {
   return (
     <div className="navbar">
       <img className="logo" src={assets.logo} alt="" />
@@ -12,4 +12,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Navebar;
