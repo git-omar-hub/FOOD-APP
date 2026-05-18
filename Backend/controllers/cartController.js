@@ -43,4 +43,24 @@ const getCart = async (req, res) => {
   }
 };
 
-export { addToCart, removeFromCart, getCart };
+const mergeCart = async (req, res) => {
+  try {
+    const { items } = req.body;
+    const userData = await userModel.findById(req.body.userId);
+    const serverCart = userData.cartData || {};
+    if (items && typeof items === "object") {
+      for (const [itemId, qty] of Object.entries(items)) {
+        if (qty > 0) {
+          serverCart[itemId] = Math.max(serverCart[itemId] || 0, qty);
+        }
+      }
+    }
+    await userModel.findByIdAndUpdate(req.body.userId, { cartData: serverCart });
+    res.json({ success: true, data: serverCart });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error merging cart" });
+  }
+};
+
+export { addToCart, removeFromCart, getCart, mergeCart };

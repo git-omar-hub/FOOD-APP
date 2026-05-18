@@ -24,7 +24,7 @@ const signupSchema = loginSchema.extend({
 });
 
 const LoginPopup = ({ setShowLogin }) => {
-  const { url, setToken } = useContext(StoreContext);
+  const { url, setToken, cartItems } = useContext(StoreContext);
   const [currState, setCurrState] = useState("Login");
   const isSignUp = currState === "Sign Up";
   const schema = isSignUp ? signupSchema : loginSchema;
@@ -48,6 +48,10 @@ const LoginPopup = ({ setShowLogin }) => {
         setToken(res.data.token);
         localStorage.setItem("token", res.data.token);
         setShowLogin(false);
+        const hasLocalItems = Object.values(cartItems).some((q) => q > 0);
+        if (hasLocalItems) {
+          await axios.post(`${url}/api/cart/merge`, { items: cartItems }, { headers: { token: res.data.token } });
+        }
         toast.success(isSignUp ? "Account created successfully" : "Logged in successfully");
       } else {
         toast.error(res.data.message);

@@ -7,12 +7,12 @@ import { toast } from "sonner";
 import OrderTimeline from "../../OrderTimeline/OrderTimeline";
 import Skeleton from "../../Skeleton/Skeleton";
 import EmptyState from "../../EmptyState/EmptyState";
-const MyoRders = () => {
+const MyOrders = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { url, token } = useContext(StoreContext);
 
-  const featchOrdes = async () => {
+  const fetchOrders = async () => {
     setLoading(true);
     try {
       const res = await axios.get(
@@ -32,12 +32,12 @@ const MyoRders = () => {
 
   const cancelOrder = async (orderId) => {
     const res = await axios.post(url + "/api/order/cancel", { orderId }, { headers: { token } });
-    if (res.data.success) { toast.success("Order cancelled"); featchOrdes(); }
+    if (res.data.success) { toast.success("Order cancelled"); fetchOrders(); }
     else toast.error(res.data.message);
   };
 
   useEffect(() => {
-    if (token) featchOrdes();
+    if (token) fetchOrders();
   }, [token]); // eslint-disable-line
 
   if (loading) return <div className="my-orders"><h2>My Orders</h2><Skeleton type="order" count={3} /></div>;
@@ -67,7 +67,7 @@ const MyoRders = () => {
                 <div className="my-orders-order__actions">
                   <OrderTimeline status={order.status} />
                   {canCancel && <button className="cancel-btn" onClick={() => cancelOrder(order._id)}>Cancel</button>}
-                  <button onClick={featchOrdes}>Refresh</button>
+                  <button onClick={fetchOrders}>Refresh</button>
                 </div>
               </div>
             );
@@ -78,4 +78,4 @@ const MyoRders = () => {
   );
 };
 
-export default MyoRders;
+export default MyOrders;

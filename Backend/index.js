@@ -1,7 +1,11 @@
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
-process.loadEnvFile(join(__dirname, ".env"));
+try {
+  process.loadEnvFile(join(__dirname, ".env"));
+} catch {
+  import("dotenv").then((dotenv) => dotenv.config({ path: join(__dirname, ".env") }));
+}
 
 import  express  from "express";
 import cors from 'cors';
@@ -22,7 +26,14 @@ const app=express();
 connectDB()
 
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://food-app-jtkt.vercel.app',
+  ],
+  credentials: true,
+}))
 
 
 // api endpoints

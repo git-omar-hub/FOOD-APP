@@ -1,10 +1,17 @@
 import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import bcrypt from "bcrypt";
 import couponModel from "./models/couponModel.js";
+import userModel from "./models/userModel.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-process.loadEnvFile(join(__dirname, ".env"));
+try {
+  process.loadEnvFile(join(__dirname, ".env"));
+} catch {
+  const dotenv = await import("dotenv");
+  dotenv.config({ path: join(__dirname, ".env") });
+}
 
 const coupons = [
   { code: "111", discount: 5, type: "percentage", minAmount: 0 },
@@ -28,6 +35,23 @@ const seed = async () => {
 
     await couponModel.insertMany(coupons);
     console.log(`Seeded ${coupons.length} coupons`);
+
+    const adminEmail = process.env.ADMIN_EMAIL || "admin@yourdish.com";
+    const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
+    const existingAdmin = await userModel.findOne({ email: adminEmail });
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      await userModel.create({
+        name: "Admin",
+        email: adminEmail,
+        password: hashedPassword,
+        isAdmin: true,
+      });
+      console.log(`Admin user created: ${adminEmail}`);
+    } else {
+      await userModel.findByIdAndUpdate(existingAdmin._id, { isAdmin: true });
+      console.log(`Admin user already exists: ${adminEmail}`);
+    }
 
     await mongoose.disconnect();
     console.log("Done");

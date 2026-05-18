@@ -7,6 +7,7 @@ export const StoreContext = createContext(null);
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const [food_list, setFood_list] = useState(localFoodList);
+  const [favoritedIds, setFavoritedIds] = useState(new Set());
   const url = "http://localhost:4000";
   const [token, setToken] = useState("");
 
@@ -54,6 +55,20 @@ const StoreContextProvider = (props) => {
       .catch(() => toast.error("Failed to load cart"));
   };
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponCode, setCouponCode] = useState("");
+
+  const loadFavorites = async (token) => {
+    try {
+      const res = await axios.post(`${url}/api/favorite/list`, {}, { headers: { token } });
+      if (res.data.success) {
+        const ids = new Set((res.data.data || []).map((f) => f._id));
+        setFavoritedIds(ids);
+      }
+    } catch {}
+  };
+
   const getTotalCartAmount = () => {
     let totalAmount = 0;
     for (const item in cartItems) {
@@ -74,6 +89,14 @@ const StoreContextProvider = (props) => {
     url,
     token,
     setToken,
+    searchQuery,
+    setSearchQuery,
+    favoritedIds,
+    loadFavorites,
+    couponDiscount,
+    setCouponDiscount,
+    couponCode,
+    setCouponCode,
   };
 
   useEffect(() => {
@@ -82,9 +105,15 @@ const StoreContextProvider = (props) => {
       if (localStorage.getItem("token")) {
         setToken(localStorage.getItem("token"));
         await loadCartData(localStorage.getItem("token"));
+        await loadFavorites(localStorage.getItem("token"));
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (token) loadFavorites(token);
+    else setFavoritedIds(new Set());
+  }, [token]);
   return (
     <StoreContext.Provider value={contextValue}>
       {props.children}

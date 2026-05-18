@@ -39,16 +39,11 @@ const applyCoupon = async (req, res) => {
     if (coupon.expiresAt && new Date() > coupon.expiresAt) {
       return res.json({ success: false, message: "Coupon has expired" });
     }
-    if (coupon.maxUses > 0 && coupon.usedCount >= coupon.maxUses) {
-      return res.json({ success: false, message: "Coupon usage limit reached" });
-    }
     if (amount < coupon.minAmount) {
       return res.json({ success: false, message: `Minimum amount $${coupon.minAmount} required` });
     }
     let discount = coupon.type === "percentage" ? Math.round(amount * coupon.discount / 100) : coupon.discount;
     if (discount > amount) discount = amount;
-
-    await couponModel.findByIdAndUpdate(coupon._id, { $inc: { usedCount: 1 } });
 
     res.json({ success: true, discount, message: `Coupon applied! You saved $${discount}` });
   } catch (error) {

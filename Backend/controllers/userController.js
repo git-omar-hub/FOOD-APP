@@ -3,24 +3,23 @@ import jwt from "jsonwebtoken";
 import bcrypt, { hash } from "bcrypt";
 import validator from "validator";
 
-// login user
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await userModel.findOne({ email });
     if (!user) {
-      return res.json({ success: false, message: "user not found" });
+      return res.json({ success: false, message: "User not found" });
     }
-    bcrypt.compare(password, user.password).then((authUser) => {
-      if (!authUser) {
-        return res.json({ success: false, message: "incorrect Password" });
-      }
-      const token = createToken(user._id);
-      return res.json({
-        success: true,
-        message: "logined successfuly",
-        token: token,
-      });
+    const authUser = await bcrypt.compare(password, user.password);
+    if (!authUser) {
+      return res.json({ success: false, message: "Incorrect password" });
+    }
+    const token = createToken(user._id);
+    return res.json({
+      success: true,
+      message: "Logged in successfully",
+      token,
+      isAdmin: user.isAdmin || false,
     });
   } catch (error) {
     console.log(error);

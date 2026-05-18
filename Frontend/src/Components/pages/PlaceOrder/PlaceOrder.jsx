@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,7 +10,7 @@ import FormField from "../../FormField/FormField";
 import "./PlaceOrder.css";
 
 const deliverySchema = z.object({
-  fristName: z.string().min(1, "First name is required"),
+  firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().min(1, "Email is required").email("Invalid email address"),
   street: z.string().min(1, "Street is required"),
@@ -22,27 +22,51 @@ const deliverySchema = z.object({
 });
 
 const PlaceOrder = () => {
-  const { getTotalCartAmount, token, food_list, cartItems, url } =
+  const { getTotalCartAmount, token, food_list, cartItems, url, couponDiscount, couponCode } =
     useContext(StoreContext);
-  const navegat = useNavigate();
+  const navigate = useNavigate();
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [saveAddress, setSaveAddress] = useState(false);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(deliverySchema),
   });
 
+  const total = getTotalCartAmount();
+
   useEffect(() => {
     if (!token) {
       toast.error("Please sign in to checkout");
-      navegat("/cart");
-    } else if (getTotalCartAmount() === 0) {
-      toast.error("Your cart is empty");
-      navegat("/cart");
+      navigate("/cart");
+      return;
     }
-  }, [token, getTotalCartAmount, navegat]);
+    if (total === 0) {
+      toast.error("Your cart is empty");
+      navigate("/cart");
+      return;
+    }
+    axios.post(`${url}/api/address/list`, {}, { headers: { token } }).then((res) => {
+      if (res.data.success) setSavedAddresses(res.data.data || []);
+    }).catch(() => {});
+  }, [token, total, navigate, url]);
+
+  const selectAddress = (addr) => {
+    setValue("firstName", addr.firstName || addr.fristName || "");
+    setValue("lastName", addr.lastName || "");
+    setValue("email", addr.email || "");
+    setValue("street", addr.street || "");
+    setValue("city", addr.city || "");
+    setValue("state", addr.state || "");
+    setValue("zipcode", addr.zipcode || "");
+    setValue("country", addr.country || "");
+    setValue("phone", addr.phone || "");
+    toast.success("Address selected");
+  };
 
   const onSubmit = async (data) => {
     let orderItems = [];
@@ -55,9 +79,12 @@ const PlaceOrder = () => {
     let orderData = {
       address: data,
       items: orderItems,
-      amount: getTotalCartAmount() + 2,
+      couponCode: couponCode || "",
     };
     try {
+      if (saveAddress) {
+        await axios.post(`${url}/api/address/add`, data, { headers: { token } }).catch(() => {});
+      }
       let response = await axios.post(url + "/api/order/place", orderData, {
         headers: { token },
       });
@@ -65,7 +92,7 @@ const PlaceOrder = () => {
         const { session_url } = response.data;
         window.location.replace(session_url);
       } else {
-        toast.error(response.data.message || "Failed to place order");
+        toast.error(response.data.error || response.data.message || "Failed to place order");
       }
     } catch (err) {
       if (err.code === "ERR_NETWORK") {
@@ -80,12 +107,30 @@ const PlaceOrder = () => {
     <form onSubmit={handleSubmit(onSubmit)} className="place-order">
       <div className="place-order-left">
         <p className="title">Delivery Information</p>
+
+        <div className="saved-addresses">
+          <p className="saved-addresses-label">Saved addresses</p>
+          {savedAddresses.length > 0 ? savedAddresses.map((addr) => (
+            <button
+              type="button"
+              key={addr._id}
+              className="saved-address-card"
+              onClick={() => selectAddress(addr)}
+            >
+              <strong>{addr.label || "Address"}</strong>
+              <span>{addr.street}, {addr.city}</span>
+            </button>
+          )) : (
+            <p className="saved-addresses-empty">No saved addresses yet</p>
+          )}
+        </div>
+
         <div className="multi-fields">
           <FormField
-            name="fristName"
+            name="firstName"
             placeholder="First name"
             register={register}
-            error={errors.fristName}
+            error={errors.firstName}
           />
           <FormField
             name="lastName"
@@ -141,6 +186,10 @@ const PlaceOrder = () => {
           register={register}
           error={errors.phone}
         />
+        <label className="save-address-checkbox">
+          <input type="checkbox" checked={saveAddress} onChange={(e) => setSaveAddress(e.target.checked)} />
+          Save this address for future orders
+        </label>
       </div>
       <div className="place-order-right">
         <div className="cart-total">
@@ -155,12 +204,19 @@ const PlaceOrder = () => {
               <p>Delivery Fee</p>
               <p>${getTotalCartAmount() === 0 ? 0 : 2}</p>
             </div>
+            {couponDiscount > 0 && (
+              <>
+                <hr />
+                <div className="cart-total-details cart-total-discount">
+                  <p>Discount ({couponCode})</p>
+                  <p>−${couponDiscount}</p>
+                </div>
+              </>
+            )}
             <hr />
             <div className="cart-total-details">
               <p>Total</p>
-              <p>
-                ${getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2}
-              </p>
+              <p>${Math.max(0, getTotalCartAmount() + 2 - (couponDiscount || 0))}</p>
             </div>
             <hr />
           </div>

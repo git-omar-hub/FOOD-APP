@@ -82,3 +82,30 @@
 .food-item-fav--active {
   color: tomato;
 }
+
+.food-item-stars {
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+.food-item-stars .star-filled {
+  color: tomato;
+}
+.food-item-stars .star-empty {
+  color: #ddd;
+}
+
+.food-item-review-btn {
+  background: none;
+  border: 1px solid tomato;
+  color: tomato;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: 0.2s;
+}
+.food-item-review-btn:hover {
+  background: tomato;
+  color: white;
+}

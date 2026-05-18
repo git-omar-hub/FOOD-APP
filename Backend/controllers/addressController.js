@@ -2,7 +2,10 @@ import addressModel from "../models/addressModel.js";
 
 const addAddress = async (req, res) => {
   try {
-    const address = new addressModel({ ...req.body, userId: req.body.userId });
+    const data = { ...req.body };
+    if (data.firstName) data.firstName = data.firstName;
+    if (data.fristName) { data.firstName = data.fristName; delete data.fristName; }
+    const address = new addressModel({ ...data, userId: req.body.userId });
     await address.save();
     res.json({ success: true, message: "Address saved", data: address });
   } catch (error) {

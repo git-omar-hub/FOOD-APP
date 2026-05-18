@@ -30,15 +30,31 @@
 .my-orders-order__actions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  min-width: 200px;
+  width: 100%;
 }
 .my-orders-order__actions button {
   border: none;
-  padding: 12px 0px;
+  padding: 12px 0;
   border-radius: 4px;
   background-color: #ffe1e1;
   cursor: pointer;
   color: #454545;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 500;
+}
+.my-orders-order__actions .cancel-btn {
+  background-color: #ffe1e1;
+  color: tomato;
+  font-weight: 600;
+}
+.my-orders-order__actions .timeline {
+  width: 100%;
+}
+.my-orders-order__actions .timeline-label {
+  font-size: 10px;
 }
 
 @media (max-width: 900px) {

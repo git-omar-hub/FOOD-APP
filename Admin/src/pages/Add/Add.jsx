@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,7 +19,16 @@ const foodSchema = z.object({
 const Add = ({ url }) => {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
-  const navegate = useNavigate();
+  const [categories, setCategories] = useState(["Salad", "Rolls", "Desert", "Sandwich", "Cake", "Pure Veg", "Pasta", "Noodles"]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios.get(`${url}/api/category/list`).then((res) => {
+      if (res.data.success && res.data.data.length > 0) {
+        setCategories(res.data.data.map((c) => c.name));
+      }
+    }).catch(() => {});
+  }, [url]);
 
   const {
     register,
@@ -32,7 +41,7 @@ const Add = ({ url }) => {
       name: "",
       description: "",
       price: "",
-      category: "Salad",
+      category: categories[0] || "Salad",
     },
   });
 
@@ -63,7 +72,7 @@ const Add = ({ url }) => {
       reset();
       setImage(null);
       setPreview(null);
-      navegate("/list");
+      navigate("/list");
     } catch {
       toast.error("Error adding the food");
     }
@@ -115,14 +124,9 @@ const Add = ({ url }) => {
               className="form-field__input"
               {...register("category")}
             >
-              <option value="Salad">Salad</option>
-              <option value="Rolls">Rolls</option>
-              <option value="Desert">Desert</option>
-              <option value="Sandwich">Sandwich</option>
-              <option value="Cake">Cake</option>
-              <option value="Pure Veg">Pure Veg</option>
-              <option value="Pasta">Pasta</option>
-              <option value="Noodles">Noodles</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
             </select>
             {errors.category && (
               <span className="form-field__error">{errors.category.message}</span>
