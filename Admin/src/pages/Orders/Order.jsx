@@ -1,16 +1,17 @@
 import "./Order.css";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { StoreContext } from "./../../../../Frontend/src/Components/context/StoreContext";
 import axios from "axios";
-import { toast } from "sonner";
-import { assets } from "../../assets/assets";
+import { toast } from "react-toastify";
+import { assets } from "./../../../../Frontend/src/assets/assets";
 const Order = ({ url }) => {
   const [orders, setOrders] = useState([]);
-  const fetchAllOrders = async () => {
+  const featchALlOrders = async () => {
     const res = await axios.get(url + "/api/order/list");
     if (res.data.success) {
       setOrders(res.data.data);
     } else {
-      toast.error("Error fetching orders");
+      toast.error("Error featching orders");
     }
   };
 
@@ -20,15 +21,15 @@ const Order = ({ url }) => {
       orderId: orderId,
     });
     if (res.data.success) {
-      await fetchAllOrders();
-      toast.success("Status updated successfully");
+      await featchALlOrders();
+      toast.success("Status updated successfuly");
     } else {
-      toast.error("Error fetching orders");
+      toast.error("Error featching orders");
     }
   };
 
   useEffect(() => {
-    fetchAllOrders();
+    featchALlOrders();
   }, []);
 
   return (
@@ -50,7 +51,7 @@ const Order = ({ url }) => {
                   })}
                 </p>
                 <p className="order-item-name">
-                  {(order.address.firstName || order.address.fristName) + " " + order.address.lastName}
+                  {order.address.fristName + " " + order.address.lastName}
                 </p>
                 <div className="order-item-address">
                   <p>{order.address.street + ","}</p>
